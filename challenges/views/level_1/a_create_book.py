@@ -13,7 +13,6 @@ from challenges.models import Book
 
 
 def create_book(title: str, author_full_name: str, isbn: str) -> Book:
-    # код писать тут
     pass
 
 
@@ -26,9 +25,11 @@ def create_book_handler(request: HttpRequest) -> HttpResponse:
 
     book = create_book(title, author_full_name, isbn)
 
-    return JsonResponse({
-        "id": book.pk,
-        "title": book.title,
-        "author_full_name": book.author_full_name,
-        "isbn": book.isbn,
-    })
+    return JsonResponse(
+        {
+            "id": book.pk,
+            "title": book.title,
+            "author_full_name": book.author_full_name,
+            "isbn": book.isbn,
+        }
+    )
