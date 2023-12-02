@@ -15,19 +15,22 @@ from challenges.models import Book
 
 
 def get_book(book_id: int) -> Book | None:
-    # код писать тут
-    pass
+    book = Book.objects.get(id=book_id)
+    return book
 
 
 def book_details_handler(request: HttpRequest, book_id: int) -> HttpResponse:
     book = get_book(book_id)
+    print(request)
 
     if book is None:
         return HttpResponseNotFound()
 
-    return JsonResponse({
-        "id": book.pk,
-        "title": book.title,
-        "author_full_name": book.author_full_name,
-        "isbn": book.isbn,
-    })
+    return JsonResponse(
+        {
+            "id": book.pk,
+            "title": book.title,
+            "author_full_name": book.author_full_name,
+            "isbn": book.isbn,
+        }
+    )
