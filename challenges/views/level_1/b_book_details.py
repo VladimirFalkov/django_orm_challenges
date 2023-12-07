@@ -10,12 +10,12 @@
 Сделать get-запрос вы можете как с помощью Postman, так и просто в браузере.
 """
 from django.http import HttpRequest, HttpResponse, JsonResponse, HttpResponseNotFound
-
+from django.shortcuts import get_object_or_404
 from challenges.models import Book
 
 
 def get_book(book_id: int) -> Book | None:
-    book = Book.objects.get(id=book_id)
+    book = get_object_or_404(Book, pk=book_id)
     return book
 
 
