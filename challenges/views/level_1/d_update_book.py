@@ -10,11 +10,21 @@
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest, JsonResponse
 
 from challenges.models import Book
+from challenges.views.level_1.b_book_details import get_book
 
 
-def update_book(book_id: int, new_title: str, new_author_full_name: str, new_isbn: str) -> Book | None:
-    # код писать тут
-    pass
+def update_book(
+    book_id: int, new_title: str, new_author_full_name: str, new_isbn: str
+) -> Book | None:
+    book = get_book(book_id)
+    if book:
+        book.title = new_title
+        book.author_full_name = new_author_full_name
+        book.isbn = new_isbn
+        book.save()
+        return book
+    else:
+        return None
 
 
 def update_book_handler(request: HttpRequest, book_id: int) -> HttpResponse:
@@ -29,9 +39,11 @@ def update_book_handler(request: HttpRequest, book_id: int) -> HttpResponse:
     if book is None:
         return HttpResponseBadRequest()
 
-    return JsonResponse({
-        "id": book.pk,
-        "title": book.title,
-        "author_full_name": book.author_full_name,
-        "isbn": book.isbn,
-    })
+    return JsonResponse(
+        {
+            "id": book.pk,
+            "title": book.title,
+            "author_full_name": book.author_full_name,
+            "isbn": book.isbn,
+        }
+    )
