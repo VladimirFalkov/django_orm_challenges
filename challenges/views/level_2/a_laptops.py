@@ -11,15 +11,14 @@
 - реализовать у модели метод to_json, который будет преобразовывать объект ноутбука в json-сериализуемый словарь
 - по очереди реализовать каждую из вьюх в этом файле, проверяя правильность их работу в браузере
 """
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from challenges.models import Laptop
 
 
 def laptop_details_view(request: HttpRequest, laptop_id: int) -> HttpResponse:
-    """
-    В этой вьюхе вам нужно вернуть json-описание ноутбука по его id.
-    Если такого id нет, вернуть 404.
-    """
-    pass
+    laptop = Laptop.objects.get(id=laptop_id)
+    context = laptop.to_json()
+    return JsonResponse(context)
 
 
 def laptop_in_stock_list_view(request: HttpRequest) -> HttpResponse:
@@ -27,7 +26,9 @@ def laptop_in_stock_list_view(request: HttpRequest) -> HttpResponse:
     В этой вьюхе вам нужно вернуть json-описание всех ноутбуков, которых на складе больше нуля.
     Отсортируйте ноутбуки по дате добавления, сначала самый новый.
     """
-    pass
+    laptops = Laptop.objects.filter(quantity__gt=0).order_by("-date_is_added")
+    context = [laptop.to_json() for laptop in laptops]
+    return JsonResponse(context, safe=False)
 
 
 def laptop_filter_view(request: HttpRequest) -> HttpResponse:
@@ -37,7 +38,13 @@ def laptop_filter_view(request: HttpRequest) -> HttpResponse:
     Если бренд не входит в список доступных у вас на сайте или если цена отрицательная, верните 403.
     Отсортируйте ноутбуки по цене, сначала самый дешевый.
     """
-    pass
+    brand = request.GET.get("brand")
+    price = request.GET.get("min_price")
+    if not brand or not price:
+        return HttpResponse(status=403)
+    laptops = Laptop.objects.filter(brand=brand, price__gte=price).order_by("price")
+    context = [laptop.to_json() for laptop in laptops]
+    return JsonResponse(context, safe=False)
 
 
 def last_laptop_details_view(request: HttpRequest) -> HttpResponse:
@@ -45,4 +52,7 @@ def last_laptop_details_view(request: HttpRequest) -> HttpResponse:
     В этой вьюхе вам нужно вернуть json-описание последнего созданного ноутбука.
     Если ноутбуков нет вообще, вернуть 404.
     """
-    pass
+    last_laptop = Laptop.objects.last()
+    if not last_laptop:
+        return HttpResponse(status=404)
+    return JsonResponse(last_laptop.to_json())
