@@ -31,6 +31,7 @@ urlpatterns = [
     path("laptops/in-stock/", laptop_in_stock_list_view),
     path("laptops/", laptop_filter_view),
     path("laptops/last/", last_laptop_details_view),
+    #######################################################################
     path("posts/latest/", last_posts_list_view),
     path("posts/search/", posts_search_view),
     path("posts/untagged/", untagged_posts_list_view),

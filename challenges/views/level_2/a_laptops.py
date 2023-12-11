@@ -18,7 +18,7 @@ from challenges.models import Laptop
 def laptop_details_view(request: HttpRequest, laptop_id: int) -> HttpResponse:
     laptop = Laptop.objects.get(id=laptop_id)
     context = laptop.to_json()
-    return JsonResponse(context)
+    return JsonResponse(context, status=200)
 
 
 def laptop_in_stock_list_view(request: HttpRequest) -> HttpResponse:
@@ -42,7 +42,9 @@ def laptop_filter_view(request: HttpRequest) -> HttpResponse:
     price = request.GET.get("min_price")
     if not brand or not price:
         return HttpResponse(status=403)
-    laptops = Laptop.objects.filter(brand=brand, price__gte=price).order_by("price")
+    laptops = Laptop.objects.filter(brand=brand, price__gte=price).order_by(
+        "price"
+    )
     context = [laptop.to_json() for laptop in laptops]
     return JsonResponse(context, safe=False)
 
